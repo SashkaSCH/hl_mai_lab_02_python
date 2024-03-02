@@ -1,0 +1,133 @@
+openapi: 3.0.0
+info:
+  title: Сервис для общения
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /users:
+    get:
+      summary: Получить список пользователей
+      responses:
+        200:
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{user_id}:
+    get:
+      summary: Получить пользователя по ID
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Пользователь
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: Пользователь не найден
+  /walls:
+    get:
+      summary: Получить список записей на стене
+      responses:
+        200:
+          description: Список записей на стене
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Wall'
+  /walls/{wall_id}:
+    get:
+      summary: Получить запись на стене по ID
+      parameters:
+        - name: wall_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Запись на стене
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wall'
+        404:
+          description: Запись на стене не найдена
+ 
+  /users/search:
+    get:
+      summary: Поиск пользователей по фамилии и имени
+      parameters:
+        - name: last_name
+          in: query
+          schema:
+            type: string
+        - name: first_name
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID пользователя
+        login:
+          type: string
+          description: Логин пользователя
+        first_name:
+          type: string
+          description: Имя пользователя
+        last_name:
+          type: string
+          description: Фамилия пользователя
+        birth_date:
+          type: string
+          format: date
+          description: Дата рождения пользователя
+        email:
+          type: string
+          description: Email пользователя
+        title:
+          type: string
+          description: Должность пользователя
+        password:
+          type: string
+          description: Пароль пользователя
+        photo:
+          type: string
+          description: Фото пользователя
+    Wall:
+      type: object
+      properties:
+        wall_id:
+          type: integer

@@ -1,41 +1,20 @@
-from pydantic import BaseModel, EmailStr, Field
+from . import ma
+from .models import User, Wall, Message
 
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        sqla_session = db.session
+        load_instance = True
 
-class UserIn(BaseModel):
-    login: str = Field(..., max_length=256)
-    password: str = Field(..., max_length=256)
+class WallSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Wall
+        sqla_session = db.session
+        load_instance = True
 
-
-class UserOut(BaseModel):
-    id: int
-    login: str = Field(..., max_length=256)
-    first_name: str | None = Field(None, max_length=256)
-    last_name: str | None = Field(None, max_length=256)
-    birth_date: str | None = Field(None, format="date")
-    email: EmailStr | None = Field(None, max_length=256)
-    title: str | None = Field(None, max_length=256)
-    photo: str | None = Field(None, max_length=256)
-
-
-class WallCreate(BaseModel):
-    content: str = Field(..., max_length=256)
-    user_id: int
-
-
-class WallOut(BaseModel):
-    wall_id: int
-    content: str = Field(..., max_length=256)
-    user: UserOut
-
-
-class MessageCreate(BaseModel):
-    content: str = Field(..., max_length=256)
-    author_id: int
-    recipient_id: int
-
-
-class MessageOut(BaseModel):
-    message_id: int
-    content: str = Field(..., max_length=256)
-    author: UserOut
-    recipient: UserOut
+class MessageSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Message
+        sqla_session = db.session
+        load_instance = True

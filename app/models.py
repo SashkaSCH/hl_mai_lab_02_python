@@ -1,47 +1,26 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from . import db
 
-from database import Base
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    login = db.Column(db.String(255), unique=True, nullable=False)
+    first_name = db.Column(db.String(255), nullable=False)
+    last_name = db.Column(db.String(255), nullable=False)
+    birth_date = db.Column(db.Date, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    title = db.Column(db.String(255))
+    password = db.Column(db.String(255), nullable=False)
+    photo = db.Column(db.LargeBinary)
 
+class Wall(db.Model):
+    wall_id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    description = db.Column(db.Text)
+    update_date = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
 
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    login = Column(String(256), unique=True)
-    first_name = Column(String(256))
-    last_name = Column(String(256))
-    birth_date = Column(DateTime)
-    email = Column(String(256))
-    title = Column(String(256))
-    password = Column(String(256))
-    photo = Column(String(256))
-
-    walls = relationship("Wall", back_populates="user")
-    messages_sent = relationship("Message", foreign_keys=[message_id], back_populates="author")
-    messages_received = relationship("Message", foreign_keys=[recipient_id], back_populates="recipient")
-
-
-class Wall(Base):
-    __tablename__ = "walls"
-
-    wall_id = Column(Integer, primary_key=True, autoincrement=True)
-    content = Column(String(256))
-    user_id = Column(Integer, ForeignKey("users.id"))
-    description = Column(String(256))
-    update_date = Column(DateTime)
-
-    user = relationship("User", back_populates="walls")
-
-
-class Message(Base):
-    __tablename__ = "messages"
-
-    message_id = Column(Integer, primary_key=True, autoincrement=True)
-    content = Column(String(256))
-    author_id = Column(Integer, ForeignKey("users.id"))
-    recipient_id = Column(Integer, ForeignKey("users.id"))
-    message_date = Column(DateTime)
-
-    author = relationship("User", foreign_keys=[author_id], back_populates="messages_sent")
-    recipient = relationship("User", foreign_keys=[recipient_id], back_populates="messages_received")
+class Message(db.Model):
+    message_id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    message_date = db.Column(db.DateTime, server_default=db.func.now())
